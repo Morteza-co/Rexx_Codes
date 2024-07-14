@@ -1,0 +1,53 @@
+/*******************************************************************REXX*********************************************/
+/* The code takes an initial dataset, allows for word replacements, and stores the modified data in a new dataset. */
+/*                                           auth by :Morteza Moradi , date:20240609                              */
+/*****************************************************************************************************************/
+SAY 'ENTER SOURCE DATASET NAME:'                                   
+PULL SOURCEDS                                                      
+SAY 'ENTER TARGET DATASET NAME:'                                   
+PULL TARGETDS                                                      
+IF SOURCEDS = '' THEN DO                                           
+  SAY 'SOURCE CUSTOMER DATASET NAME IS REQUIRED.'                  
+  EXIT                                                             
+END                                                                
+IF TARGETDS = '' THEN DO                                           
+  SAY 'TARGET CUSTOMER DATASET NAME IS REQUIRED.'                  
+  EXIT                                                             
+END                                                                
+"ALLOC FI(SRCDS) DA('"SOURCEDS"') SHR REUSE"                       
+"EXECIO * DISKR SRCDS (STEM DATALINES. FINIS"                      
+IF RC <> 0 THEN DO                                                 
+  SAY 'ERROR READING FROM SOURCE CUSTOMER DATASET.'                
+  "FREE FI(SRCDS)"                                                 
+  EXIT                                                             
+END                                                                
+NUMLINES = DATALINES.0                                             
+DO I = 1 TO NUMLINES                                               
+  DATALINES.I = REPLACE(DATALINES.I, 'DATABASE_NAME', 'Target_name of database')   
+  DATALINES.I = REPLACE(DATALINES.I, 'TABLESPACE_NAME', 'Target_name of TableSpace')
+END                                                                
+"ALLOC FI(TGTDS) DA('"TARGETDS"') SHR REUSE"                    
+"EXECIO * DISKW TGTDS (STEM DATALINES. FINIS"                   
+IF RC <> 0 THEN DO                                              
+  SAY 'ERROR WRITING TO TARGET CUSTOMER DATASET.'               
+END                                                             
+ELSE DO                                                         
+  SAY 'CUSTOMER DATA COPIED AND MODIFIED SUCCESSFULLY.'         
+END                                                             
+"FREE FI(SRCDS)"                                                
+"FREE FI(TGTDS)"                                                
+REPLACE:                                                        
+ORIGINAL = ARG(1)                                               
+OLDTXT = ARG(2)                                                 
+NEWTXT = ARG(3)                                                 
+TMPTXT = '6B53CD2EW1F'                                          
+NEWSTR = ORIGINAL                                               
+DO WHILE POS(OLDTXT,NEWSTR) > 0                                 
+NEWSTR = SUBSTR(NEWSTR, 1 , POS(OLDTXT,NEWSTR)-1) ||,           
+TMPTXT || SUBSTR(NEWSTR, POS(OLDTXT,NEWSTR) + LENGTH(OLDTXT))   
+END                                                             
+DO WHILE POS(TMPTXT,NEWSTR) > 0                                 
+NEWSTR = SUBSTR(NEWSTR, 1 , POS(TMPTXT,NEWSTR)-1) ||,           
+NEWTXT || SUBSTR(NEWSTR, POS(TMPTXT,NEWSTR) + LENGTH(TMPTXT))   
+END                                                             
+RETURN NEWSTR            
