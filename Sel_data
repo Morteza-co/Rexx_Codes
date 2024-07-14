@@ -5,10 +5,10 @@
 ADDRESS TSO 'SUBCOM DSNREXX'                                            
 S_RC = RXSUBCOM('ADD','DSNREXX','DSNREXX')                              
 ADDRESS DSNREXX                                                         
-'CONNECT' 'DSND'                                                        
+'CONNECT' 'Subsystem_name'                                                        
 /* PREPARE THE SQL STATEMENT */                                         
-SQLSTMT = "SELECT MAX(PAN_INFO_BEHS_ID)",                               
-"FROM CMS.PAN_INFO_BEHS"                                                
+SQLSTMT = "SELECT MAX(Name_of_field)",                               
+"FROM Name_of_table"                                                
 ADDRESS DSNREXX                                                         
 "EXECSQL DECLARE C7 CURSOR FOR S7"                                      
 "EXECSQL PREPARE S7 FROM :SQLSTMT"                                      
