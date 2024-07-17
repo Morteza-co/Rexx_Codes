@@ -1,0 +1,18 @@
+/*******************************REXX***********************************/
+/*                       READ LOG TO 50 MESSAGES                      */
+/**********************************************************************/
+ADDRESS TSO                                                             
+RC=ISFCALLS('ON')                                                       
+ADDRESS SDSF "ISFLOG READ TYPE(SYSLOG)"                                 
+SAY 'RC FROM LOG:' RC                                                   
+ IF RC<>0 THEN DO                                                       
+   DO I=1 TO ISFMSG2.0                                                  
+     SAY ISFMSG2.I                                                      
+   END                                                                  
+   EXIT 0                                                               
+ END                                                                    
+ SAY ISFLINE.0 'RECORDS RETURNED'                                       
+ DO I=1 TO ISFLINE.0 FOR 50                                             
+ SAY ISFLINE.I                                                          
+  END                                                                   
+  EXIT 0                                                                
