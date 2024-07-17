@@ -1,0 +1,7 @@
+/*******************************REXX***********************************/
+/*                     Run Start_task Job                             */
+/**********************************************************************/                           
+COMMAND = 'S LOGUSR'                   
+RC = ISFCALLS('ON')                    
+ADDRESS SDSF "ISFEXEC'/"COMMAND"'(WAIT"
+/* Attention: Start Task jobs are defined in sys1.sysproclib dataset. */
