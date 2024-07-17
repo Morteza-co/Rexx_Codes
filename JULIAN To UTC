@@ -1,0 +1,18 @@
+/*******************************REXX***********************************/
+/*             Convert JULIAN_time to UTC Time_zone                   */
+/**********************************************************************/
+YEAR = 2024                                                             
+DAYOFYEAR = 20                                                          
+DYSMNTHS = '31 29 31 30 31 30 31 31 30 31 30 31'                        
+MONTH = 1                                                               
+RMDAY = DAYOFYEAR                                                       
+DO WHILE (RMDAY > 0)                                                    
+    DYSMNTH = WORD(DYSMNTHS, MONTH)                                     
+    IF RMDAY <= DYSMNTH THEN LEAVE                                      
+    RMDAY = RMDAY - DYSMNTH                                             
+    MONTH = MONTH + 1                                                   
+END                                                                     
+IF MONTH < 10 THEN MONTH = '0' || MONTH                                 
+IF RMDAY < 10 THEN RMDAY = '0' || RMDAY                                 
+UTCDATE = YEAR || '-' || MONTH || '-' || RMDAY                          
+SAY 'THE' DAYOFYEAR 'TH DAY OF' YEAR 'IN UTC FORMAT IS:' UTCDATE        
