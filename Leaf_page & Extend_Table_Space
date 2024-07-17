@@ -1,0 +1,58 @@
+/*******************************REXX***********************************/
+/*        Find the leaf page of an index & extent table space.        */
+/**********************************************************************/
+SAY'HI, WHAT OBJECT DO YOU WANT TO CHECK? INDEX (X) OT TABLESPACE (TS)' 
+PULL OBJECT                                                             
+'SUBCOM DSNREXX'                                                        
+IF RC THEN ,                                                            
+S_RC = RXSUBCOM('ADD','DSNREXX','DSNREXX')                              
+ADDRESS DSNREXX                                                         
+'CONNECT' 'Sub_Systems_name';
+I=0;J=0;                                                
+IF OBJECT = 'TS' THEN DO                                                
+SQLTS = ,                                                               
+"SELECT  DBNAME||'.'||NAME,EXTENTS  FROM ",                             
+"SYSIBM.SYSTABLESPACESTATS WHERE EXTENTS >50",                          
+"ORDER BY EXTENTS DESC"                                                 
+"EXECSQL DECLARE S1 CURSOR FOR C1"                                      
+"EXECSQL PREPARE S1 FROM :SQLTS"                                        
+"EXECSQL OPEN C1"                                                       
+DO FOREVER                                                              
+"EXECSQL FETCH C1 INTO :DBNAME, :EXTENTS";
+I=I+1;                        
+IF SQLCODE \=0 THEN LEAVE                                               
+SAY I'.' 'NAME:' DBNAME '==>' EXTENTS                                   
+SAY '========================================'                          
+END                                                                     
+END                                                                     
+IF OBJECT = 'X' THEN DO                                                 
+SQLTS = ,                                                  
+"SELECT  DBNAME||'.'||NAME,EXTENTS  FROM ",                
+"SYSIBM.SYSTABLESPACESTATS WHERE EXTENTS >50",             
+"ORDER BY EXTENTS DESC"                                    
+"EXECSQL DECLARE S1 CURSOR FOR C1"                         
+"EXECSQL PREPARE S1 FROM :SQLTS"                           
+"EXECSQL OPEN C1"                                          
+DO FOREVER                                                 
+"EXECSQL FETCH C1 INTO :DBNAME, :EXTENTS";I=I+1;           
+IF SQLCODE \=0 THEN LEAVE                                  
+SAY I'.' 'NAME:' DBNAME '==>' EXTENTS                      
+SAY '========================================'             
+END                                                        
+END                                                        
+IF OBJECT = 'X' THEN DO                                    
+SQLX = ,                                                   
+"SELECT  DBNAME||'.'||NAME,NLEVELS,NLEAF  FROM",           
+"SYSIBM.SYSINDEXSPACESTATS WHERE NLEAF > 5555",            
+"ORDER BY NLEAF DESC"                                      
+"EXECSQL DECLARE S2 CURSOR FOR C2"                         
+"EXECSQL PREPARE S2 FROM :SQLX"                            
+"EXECSQL OPEN C2"                                          
+DO FOREVER                                                 
+"EXECSQL FETCH C2 INTO :DBNAME, :NLEVEL, :NLEAF";
+J=J+1;    
+IF SQLCODE <>0 THEN LEAVE                                  
+SAY J'.' 'NAME:' DBNAME '==>' 'LEVELS:' NLEVEL 'LFP:' NLEAF
+SAY '========================================'             
+END 
+END  
