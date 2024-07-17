@@ -1,0 +1,22 @@
+/******************************REXX*****************************************************/
+/* Parse log data to identify log_on and log_off events and insert them into a table. */
+/*************************************************************************************/
+S_RC = RXSUBCOM('ADD','DSNREXX','DSNREXX')                              
+ADDRESS DSNREXX                                                         
+'CONNECT' 'Subsystem_name'                                                        
+RC = ISFCALLS('ON')                                                     
+ADDRESS SDSF "ISFLOG READ TYPE(SYSLOG)"                                 
+    DO I = 1 TO ISFLINE.0                                               
+        IF POS('IEF125I',ISFLINE.I) \= 0 THEN DO                        
+           PARSED_DATA = SUBSTR(ISFLINE.I,POS('IEF125I',ISFLINE.I)+8,40)
+     SAY PARSED_DATA                                                    
+            /* INSERT INTO DB ONLY IF NOT EXISTS */                     
+          EXECSQL,                                                      
+            "MERGE INTO Table_name AS T",                             
+            "USING (VALUES('"PARSED_DATA"')) AS S (INSERT_DATA)",       
+            "ON T.INSERT_DATA = S.INSERT_DATA",                         
+            "WHEN NOT MATCHED THEN",                                    
+            "INSERT (INSERT_DATA) VALUES(S.INSERT_DATA)"                
+        END                                                             
+     END                                                                
+/*Please remember that the table must have a unique index on the insert_data field.*/
