@@ -1,0 +1,20 @@
+/*******************************REXX****************************/
+/*          Find the minimum ID of records in the table.       */               
+/***************************************************************/
+ADDRESS TSO 'SUBCOM DSNREXX'                                    
+S_RC = RXSUBCOM('ADD','DSNREXX','DSNREXX')                      
+ADDRESS DSNREXX                                                 
+'CONNECT' 'Sub_System_Name'                                                
+EXECSQL "DECLARE C1 CURSOR FOR SELECT MIN(ID)",/*You_Want_to_Find_Min_ID*/
+"FROM Table_Name S",                              
+"WHERE Clause WITH UR"                        
+EXECSQL "OPEN C1"                                               
+/* FETCH THE RESULT */                                          
+EXECSQL "FETCH C1 INTO :MIN_ID"                                 
+IF SQLCODE = 0 THEN DO                                          
+    SAY 'MINIMUM ID: ' MIN_ID                                   
+END                                                             
+ELSE DO                                                         
+    SAY 'FAILED TO RETRIEVE MINIMUM ID, SQLCODE:' SQLCODE       
+END                                                             
+EXECSQL "CLOSE C1"
