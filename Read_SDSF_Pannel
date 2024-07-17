@@ -1,0 +1,40 @@
+/******************************REXX************************************/
+/*   Retrieve IBMUSER's jobs from SDSF panel and insert into table.   */
+/**********************************************************************/
+RC_ISF = ISFCALLS("ON")                                      
+IF RC_ISF = 00 THEN                                          
+DO                                                           
+    ADDRESS SDSF "ISFEXEC ST(ALTERNATE DELAYED)"             
+    DO IJ = 1 TO JNAME.0-1                                   
+        IF RETCODE.IJ <> '' THEN DO                          
+            RTCODE = RETCODE.IJ                              
+            RCODE = SUBSTR(RETCODE.IJ,4,4)                   
+            CC=DATEN.IJ                                      
+            YEAR=SUBSTR(CC,3,2)                              
+            DAY=SUBSTR(CC,6,8)                               
+            TODAY = DATE('J')                                
+            YEARX = SUBSTR(TODAY, 1, 2)                      
+            DAYX = SUBSTR(TODAY, 3, 5)                       
+           IF (DAY=DAYX) THEN DO                             
+           IF (YEAR=YEARX) THEN DO                           
+           IF (JTYPE.IJ='JOB') THEN DO                       
+           IF (OWNERID.IJ='IBMUSER') THEN DO                 
+              SAY JNAME.IJ'|'TIMEE.IJ'|'TIMEN.IJ'|'RETCODE.IJ
+                CALL INST                                    
+            END                                              
+        END                                                  
+    END                                                      
+END                                                          
+END                                                          
+END                                                          
+END                                                          
+INST :                                                                
+    ADDRESS TSO 'SUBCOM DSNREXX'                                      
+    S_RC = RXSUBCOM('ADD','DSNREXX','DSNREXX')                        
+    ADDRESS DSNREXX                                                   
+    'CONNECT' 'Sub_System_Name'                                                  
+    EXECSQL ,                                                         
+     "INSERT INTO Table_Name (JOBNAME,START_TIME,END_TIME,MAX_CC)",
+     " VALUES('"JNAME.IJ"','"TIMEE.IJ"','"TIMEN.IJ"','"RETCODE.IJ"')" 
+RETURN 
+/*Attention:Table_Name columns: JOBNAME, START_TIME, END_TIME, MAX_CC.*/
